@@ -21,7 +21,7 @@ def BieuDien(src):
     #doi chuoi nhi phan sang co so 10:
     _x = int(src,base=2)
     #tim so thu x tuong ung
-    x= -1 + float(_x)*3/(pow(2,22)*3)
+    x= -1 + float(_x)*3/(pow(2,22)-1)
     f=x*math.sin(10*math.pi*x)+1
     return f
 #Buoc 2: Khoi tao quan the
@@ -36,7 +36,7 @@ def TaoChuoiADN():
     return kq
 
 quanThe=[]
-for i in range(5):
+for i in range(50):
     quanThe.append(TaoChuoiADN())
 
 #Buoc 3: Ham luong gia trinh la ham f
@@ -46,37 +46,41 @@ for i in range(5):
 
 p_c=0.25    #xac suat lai tao
 p_m=0.01    #xac suat dot bien
-pop_size=5  #kich tuoc quan the
+pop_size=50 #kich tuoc quan the
 
 quanTheThichNghi=quanThe
-print(quanThe)
+#print(quanThe)
 dem=0       #dem so lan lap
-while (dem <= 1):
+kq=[]
+
+while (dem <= 50):
 
     quanTheMoi=quanTheThichNghi
 
     #quan trinh dot bien la p_m % 1 bit bat ki trong 1 ca the bi dot bien#
-    for indexQuanThe in range(pop_size):
-        if int(p_m*22*pop_size)<1: break
-        for i in range(int(p_m*22*pop_size)):
-            indexADN=random.randint(0,21)
-            temp = quanTheMoi[indexQuanThe][indexADN]
+    indexQuanThe=random.randint(0,pop_size-1)
+    if int(p_m*22*pop_size)<1: break
+    for i in range(int(p_m*22*pop_size)):
+        indexADN=random.randint(0,21)
+        temp = quanTheMoi[indexQuanThe][indexADN]
 
-            if temp=='1':
-                quanTheMoi[indexQuanThe]=quanTheMoi[indexQuanThe][0:indexADN-1]+"0"+quanTheMoi[indexQuanThe][indexADN+1:21]
-            else: quanTheMoi[indexQuanThe]=quanTheMoi[indexQuanThe][0:indexADN-1]+"1"+quanTheMoi[indexQuanThe][indexADN+1:21]
+        catheMoi=""
+        if temp=='1':
+            catheMoi=quanTheMoi[indexQuanThe][:indexADN]+"0"+quanTheMoi[indexQuanThe][indexADN+1:]
+        else:
+            catheMoi=quanTheMoi[indexQuanThe][:indexADN]+"1"+quanTheMoi[indexQuanThe][indexADN+1:]
+        quanTheMoi[indexQuanThe]=catheMoi
+        #print(catheMoi, indexADN)
 
-            #dot bien xong thi cong vao quan the moi
-            quanTheMoi.append(quanThe[indexQuanThe][indexADN])
-    print(quanTheMoi.__len__())
+    #print(quanTheMoi.__len__())
     #qua trinh lai tao la p_c % ca the v duoc chhon de lai tao
     quanTheLai=[]
 
     def PhepLai(src1, src2):
         indexLai=random.randint(0,21)
         #sinh ra hai con moi
-        _src1=src1[0:indexLai-1]+src2[indexLai:len(src2)-1]
-        _src2=src2[0:indexLai-1]+src1[indexLai:len(src2)-1]
+        _src1=src1[:indexLai]+src2[indexLai:]
+        _src2=src2[:indexLai]+src1[indexLai:]
         quanTheMoi.append(_src1)
         quanTheMoi.append(_src2)
         return
@@ -86,19 +90,17 @@ while (dem <= 1):
         j=random.randint(0,pop_size-1)
         #print(j, quanTheThichNghi.__len__())
         quanTheLai.append(quanTheThichNghi[j])
-
-
     #lai tao
-    while j == len(quanTheLai):
+    while ( len(quanTheLai)!=0 ) :
         #phan tu j lai voi mot phan tu ngau nhien
         #sau khi lai thi tach ra khoi quan the lai
-        j=0
-        if len(quanTheLai)==1 or len(quanTheLai)==0: break
-        index1=j
-        index2=j
+
+        if len(quanTheLai)==1:
+            break
+        index1=0
+        index2=0
         while index2==index1:
             index2=random.randint(0,quanTheLai.__len__()-1)
-        print(index1, index2)
         PhepLai(quanTheLai[index1],quanTheLai[index2])
         name1=quanTheLai[index1]
         name2=quanTheLai[index2]
@@ -106,21 +108,18 @@ while (dem <= 1):
         quanTheLai.remove(name2)
 
     #sap xep va loai bo
-    doThichNghi={}
-    for cathe in quanTheMoi:
-        doThichNghi[cathe]=BieuDien(cathe)
-    index=0
-    for i in range(quanTheMoi.__len__(),0,-1):
-        if index==50: break
-        for j in range(0,i-1,1):
-            if(doThichNghi[quanTheMoi[j]] < doThichNghi[quanTheMoi[j+1]]):
-                #print(doThichNghi.__len__())
-                quanTheThichNghi[index]=quanTheMoi[j+1]
-                index+=1
+    quanTheThichNghi=[]
 
+    for i in range(quanTheMoi.__len__()):
+        for j in range(i+1,quanTheMoi.__len__(),1):
+            if BieuDien(quanTheMoi[j])>BieuDien(quanTheMoi[i]):
+                temp=quanTheMoi[i]
+                quanTheMoi[i]=quanTheMoi[j]
+                quanTheMoi[j]=temp
 
-    print(BieuDien(quanTheThichNghi[0]))
+    for i in range(pop_size):
+        quanTheThichNghi.append(quanTheMoi[i])
+    print(BieuDien(quanTheThichNghi[0]),quanTheThichNghi[0])
     dem+=1
-
 
 

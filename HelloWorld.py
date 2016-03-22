@@ -2,5 +2,5 @@ __author__ = 'crypto5'
 import random
 print("Hello World")
 
-for i in range(50):
-    print(random.randint(0,50))
+src="0000100"
+print(src[:4]+'2'+src[6:])
